@@ -29,11 +29,7 @@ public interface BookRepo extends JpaRepository<Book,Long> {
     Page<Book> pagenation(PageRequest of, String keyword);
 
 
-//    Iterable<Book> findByReleases();
-//
-//    Iterable<Book> getAllByTrends();
-//
-//
-//
-//    Collection<Object> findAllCategory();
+    Object findByNewreleases();
+
+    Object findByTrends();
 }
