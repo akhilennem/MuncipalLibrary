@@ -5,9 +5,6 @@ import com.attendance.login.OtpSender.OtpRepository.OtpRepository;
 import com.attendance.login.OtpSender.OtpVerifier.OtpVerifier;
 import com.attendance.login.OtpSender.Otpmodel.Mail;
 import com.attendance.login.OtpSender.service.MailService;
-import com.attendance.login.RestController.model.Details;
-import com.attendance.login.RestController.repository.DetailRepository;
-import com.attendance.login.UserPackage.models.DeliveryPerson;
 import com.attendance.login.UserPackage.models.User;
 import com.attendance.login.UserPackage.models.UsersReg;
 import com.attendance.login.UserPackage.repository.DeliveryPerRepo;
@@ -33,8 +30,6 @@ import java.util.List;
 @CrossOrigin
 public class OtpController {
 
-@Autowired
-    DetailRepository detailRepository;
     @Autowired
     public OtpGenarator genarator;
     @Autowired

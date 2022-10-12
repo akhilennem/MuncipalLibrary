@@ -18,7 +18,7 @@ public interface BookRepo extends JpaRepository<Book,Long> {
 
     Book getByAccessionno(String accessionno);
 
-    Object findByAccessionno(String accessionno);
+    //List<Object> findByAccessionno(String accessionno);
 
     @Query("SELECT b FROM Book b WHERE b.booktitle LIKE %?1%")
     List<Book> search(String keyword);
@@ -29,7 +29,7 @@ public interface BookRepo extends JpaRepository<Book,Long> {
     Page<Book> pagenation(PageRequest of, String keyword);
 
 
-    Object findByNewreleases();
-
-    Object findByTrends();
+//    Object findByNewreleases();
+//
+//    Object findByTrends();
 }

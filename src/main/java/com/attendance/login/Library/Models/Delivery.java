@@ -31,6 +31,7 @@ public class Delivery {
     private String dpinhand="F";
     private String userinhand="F";
     private String checkinstatus="F";
+    public String holdstatus;
 
 
 }

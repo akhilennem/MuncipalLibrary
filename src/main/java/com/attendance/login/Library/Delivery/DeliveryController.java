@@ -39,38 +39,41 @@ public class DeliveryController {
     {
         return deliveryPerRepo.save(deliveryPerson);
     }
-@PostMapping("place-order")
-    public String placeOrder(@RequestParam String accessionno,String cardnumber)
-    {
-            UsersReg usersReg;
-            usersReg=userRegRepo.getByCardnumber(cardnumber);
-            Book book= (Book) bookRepo.findByAccessionno(accessionno);
 
-            System.out.println(book);
-            Hold hold1= new Hold();
-            hold1.accessionno=accessionno;
-            hold1.setCardnumber(cardnumber);
-            hold1.setUsername(usersReg.getFirstname());
-            hold1.setHousename(usersReg.getHousname());
-            hold1.setPincode(usersReg.getPincode());
-            hold1.setPhonenumber(usersReg.getPhone());
-            hold1.setWardname(usersReg.getWardname());
-            hold1.setWardnumber(usersReg.getWardnumber());
-            hold1.setPostoffice(usersReg.getPostoffice());
-            hold1.setBookname(book.booktitle);
-            holdRepo.save(hold1);
-            return "Order Is On Hold";
-        }
+//    @PostMapping("place-order")
+//    public String placeOrder(@RequestParam String accessionno,String cardnumber)
+//    {
+//            UsersReg usersReg;
+//            usersReg= (UsersReg) userRegRepo.getByCardnumber(cardnumber);
+//            Book book= (Book) bookRepo.getByAccessionno(accessionno);
+//        System.out.println(".......................");
+//            System.out.println(book);
+//            Hold hold1= new Hold();
+//            hold1.accessionno=accessionno;
+//            hold1.setCardnumber(cardnumber);
+//            hold1.setUsername(usersReg.getFirstname());
+//            hold1.setHousename(usersReg.getHousname());
+//            hold1.setPincode(usersReg.getPincode());
+//            hold1.setPhonenumber(usersReg.getPhone());
+//            hold1.setWardname(usersReg.getWardname());
+//            hold1.setWardnumber(usersReg.getWardnumber());
+//            hold1.setPostoffice(usersReg.getPostoffice());
+//            hold1.setBookname(book.booktitle);
+//            holdRepo.save(hold1);
+//            return "Order Is On Hold";
+//        }
 
     @PostMapping("accept-order")
     public String acceptOrder(@RequestParam String response,String accessionno,String cardnumber) {
         if (response.equals("accepted")) {
             UsersReg usersReg;
-            usersReg = userRegRepo.getByCardnumber(cardnumber);
-            Book book = (Book) bookRepo.findByAccessionno(accessionno);
-
+            usersReg = (UsersReg) userRegRepo.getByCardnumber(cardnumber);
+            Book book = (Book) bookRepo.getByAccessionno(accessionno);
+            System.out.println("elements.........");
+            System.out.println(usersReg);
             System.out.println(book);
             Delivery delivery = new Delivery();
+            System.out.println("elements.........");
             delivery.setAccessionno(accessionno);
             delivery.setCardnumber(cardnumber);
             delivery.setHousename(usersReg.getHousname());
@@ -81,6 +84,11 @@ public class DeliveryController {
             delivery.setWardnumber(usersReg.getWardnumber());
             delivery.setPostoffice(usersReg.getPostoffice());
             delivery.setBookname(book.booktitle);
+            delivery.setCheckoutstatus("F");
+            delivery.setHoldstatus("F");
+            delivery.setCheckinstatus("F");
+            delivery.setDpinhand("T");
+            delivery.setUserinhand("F");
             delivery.setDistrict(usersReg.getDistrict());
 
             deliveryRepo.save(delivery);
@@ -137,7 +145,11 @@ return "Delivery Boy Accepted the Request";
         }
     }
 
-
+@PostMapping("add-delivery-boy")
+    public DeliveryPerson addDeliv(DeliveryPerson deliveryPerson)
+{
+    return deliveryPerRepo.save(deliveryPerson);
+}
 
 
     }

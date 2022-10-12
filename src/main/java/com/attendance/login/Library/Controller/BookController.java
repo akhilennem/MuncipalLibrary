@@ -4,22 +4,20 @@ import com.attendance.login.Library.Models.Book;
 import com.attendance.login.Library.Models.Hold;
 import com.attendance.login.Library.Repository.BookRepo;
 import com.attendance.login.Library.Repository.HoldRepo;
+import com.attendance.login.UserPackage.models.UsersReg;
+import com.attendance.login.UserPackage.repository.UserRegRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/book")
 public class BookController {
 
-    //    @Autowired
-//    public Book book;
+        @Autowired
+    public UserRegRepo userRegRepo;
     @Autowired
     BookRepo bookRepo;
 
@@ -40,7 +38,7 @@ public class BookController {
         return (Iterable<Book>) bookRepo.findAll();
     }
 
-    @GetMapping("/get-by-author")
+    @GetMapping("/author")
     public Iterable<Book> getByAuthor(String author) {
         return (Iterable<Book>) bookRepo.getByAuthor(author);
     }
@@ -77,62 +75,70 @@ public class BookController {
     }
 
 
-    @PostMapping("/order-book")
-    public String orderbook(@RequestParam String accessionno, String cardnumber, String housename,
-                            String wardname, String wardnumber, String postoffice, String pincode, String phonenumber) {
-        Book book = (Book) bookRepo.findByAccessionno(accessionno);
-        System.out.printf("........................... " + book.category + "\n");
-        System.out.println(book.booktitle + "\n");
-        System.out.println(book);
-        Hold hold1 = new Hold();
-        hold1.accessionno = accessionno;
-        hold1.setCardnumber(cardnumber);
-        hold1.setHousename(housename);
-        hold1.setPincode(pincode);
-        hold1.setPhonenumber(phonenumber);
-        hold1.setWardname(wardname);
-        hold1.setWardnumber(wardnumber);
-        hold1.setPostoffice(postoffice);
-        hold1.setBookname(book.booktitle);
-        holdRepo.save(hold1);
-        return "null";
-    }
+    @PostMapping("/request-book")
+    public String reqBook(String accessionno,String cardnumber) {
+        UsersReg usersReg;
+        System.out.println("....executed0....");
+        Book book = (Book) bookRepo.getByAccessionno(accessionno);
+        System.out.println("....executed....1");
+        usersReg = (UsersReg) userRegRepo.getByCardnumber(cardnumber);
+        System.out.println("....executed....2");
+        if (cardnumber.equals("0")) {
+            return "you are not a verified member";
+        } else {
 
-    @PostMapping("save-books")
-    public String savebook() {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/Details.csv"));
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] data = line.split(",");
-                Book book = new Book();
-                book.booktitle = data[0];
-                book.isbn = data[1];
-                book.language = data[2];
-                book.publicationplace = data[3];
-                book.publisher = data[4];
-                book.setPublicationdate(data[5]);
-                book.author = data[6];
-                book.editorortranslator = data[7];
-                book.volume = data[8];
-                book.price = data[9];
-                book.pages = data[10];
-                book.edition = data[11];
-                book.category = data[12];
-                book.classno = data[13];
-                book.accessionno = data[14];
-                book.callno = data[15];
-                book.subjectheading = data[16];
-                book.description = data[17];
-                bookRepo.save(book);
-            }
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-
+            System.out.println(book);
+            Hold hold1 = new Hold();
+            hold1.setAccessionno(accessionno);
+            hold1.setCardnumber(cardnumber);
+            hold1.setUsername(usersReg.getFirstname());
+            hold1.setHousename(usersReg.getHousname());
+            hold1.setPincode(usersReg.getPincode());
+            hold1.setPhonenumber(usersReg.getPhone());
+            hold1.setWardname(usersReg.getWardname());
+            hold1.setWardnumber(usersReg.getWardnumber());
+            hold1.setPostoffice(usersReg.getPostoffice());
+            hold1.setBookname(book.booktitle);
+            holdRepo.save(hold1);
+            return "Order Is On Hold";
         }
-        return null;
     }
+//
+//    @PostMapping("save-books")
+//    public String savebook() {
+//        try {
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/Details.csv"));
+//            while ((line = bufferedReader.readLine()) != null) {
+//                String[] data = line.split(",");
+//                Book book = new Book();
+//                book.booktitle = data[0];
+//                book.isbn = data[1];
+//                book.language = data[2];
+//                book.publicationplace = data[3];
+//                book.publisher = data[4];
+//                book.setPublicationdate(data[5]);
+//                book.author = data[6];
+//                book.editorortranslator = data[7];
+//                book.volume = data[8];
+//                book.price = data[9];
+//                book.pages = data[10];
+//                book.edition = data[11];
+//                book.category = data[12];
+//                book.classno = data[13];
+//                book.accessionno = data[14];
+//                book.callno = data[15];
+//                book.subjectheading = data[16];
+//                book.description = data[17];
+//                bookRepo.save(book);
+//            }
+//        } catch (IOException e) {
+//
+//            e.printStackTrace();
+//
+//
+//        }
+//        return null;
+//    }
 
     @PostMapping("/search")
     public List<Book> search(String keyword)
@@ -153,6 +159,31 @@ public class BookController {
         }
         return (Page<Book>) bookRepo.findAll();
     }
+    //................................................................................................................//
+    @PostMapping("membership-requests")
+    public List<UsersReg> memberRequests()
+    {
+        String cardnumber="0";
+        return (List<UsersReg>) userRegRepo.getByCardnumber(cardnumber);
+    }
 
+    @PostMapping("accept-requests")
+    public String addUser(String cardnumber,String expirydate,String category,String phone)
+    {
+        UsersReg usersReg;
+usersReg= (UsersReg) userRegRepo.getByPhone(phone);
+usersReg.setCardnumber(cardnumber);
+usersReg.setExpirydate(expirydate);
+usersReg.setCategory(category);
+userRegRepo.save(usersReg);
+return "Successfully Verified";
+    }
+
+    @PostMapping("delete-requests")
+    public String deleteReqs(String phone)
+    {
+        userRegRepo.deleteByPhone(phone);
+        return "deleted";
+    }
 
 }

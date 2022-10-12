@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 
 @Transactional
 @Entity
-@Table(name = "users",
+@Table(name = "admintable",
        uniqueConstraints = {
            @UniqueConstraint(columnNames = "username"),
            @UniqueConstraint(columnNames = "email")
