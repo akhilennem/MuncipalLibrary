@@ -44,4 +44,5 @@ public class Hold {
     public String phonenumber;
     public String checkoutstatus="F";
     public String holdstatus="T";
+    public String holdid;
 }

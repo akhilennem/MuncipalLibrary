@@ -12,7 +12,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 public class Delivery {
 
-    @Id
     private String cardnumber;
     private String userphone;
     private String housename;
@@ -24,6 +23,7 @@ public class Delivery {
     private String bookname;
     private String accessionno;
 //    private String barcode;
+    @Id
     private String holdid;
     private String deliveryperson;
     private String dpphone;
@@ -32,6 +32,8 @@ public class Delivery {
     private String userinhand="F";
     private String checkinstatus="F";
     public String holdstatus;
+    public String username;
+    public String barcode="0";
 
 
 }

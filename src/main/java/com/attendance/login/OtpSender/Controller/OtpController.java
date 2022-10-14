@@ -6,10 +6,8 @@ import com.attendance.login.OtpSender.OtpVerifier.OtpVerifier;
 import com.attendance.login.OtpSender.Otpmodel.Mail;
 import com.attendance.login.OtpSender.service.MailService;
 import com.attendance.login.UserPackage.models.User;
-import com.attendance.login.UserPackage.models.UsersReg;
 import com.attendance.login.UserPackage.repository.DeliveryPerRepo;
 import com.attendance.login.UserPackage.repository.RoleRepository;
-import com.attendance.login.UserPackage.repository.UserRegRepo;
 import com.attendance.login.UserPackage.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -113,6 +112,7 @@ otpRepository.deleteByPhoneoremail(phoneoremail);
 
     }
 
+
         @GetMapping("/reset-password")
     public String updatePassword(@RequestParam String email, String newpassword) {
 
@@ -156,6 +156,22 @@ return "password updated successfully";
         return Arrays.asList(obj);
 
     }
+
+//    @GetMapping("image")
+//    public Byte[] image(){
+//String uri= String.valueOf(UriComponentsBuilder.newInstance().scheme("https").host("https://w7.pngwing.com/pngs/").port(895).pathSegment());
+//
+//
+//        String url="https://w7.pngwing.com/pngs/895/199/png-transparent-spider-man-heroes-download-with-transparent-background-free-thumbnail.png";
+//        System.out.println("/////////////////////");
+//        Byte[] bytes=restTemplate.getForObject(url,Byte[].class);
+//        System.out.println("images/////////////////////");
+//        System.out.println(bytes);
+//        return bytes;
+//
+//    }
+
+
 
         }
 

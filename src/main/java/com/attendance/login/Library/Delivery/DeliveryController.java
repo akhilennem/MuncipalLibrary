@@ -1,5 +1,6 @@
 package com.attendance.login.Library.Delivery;
 
+import com.attendance.login.Library.HoldIdgenerator;
 import com.attendance.login.Library.Models.Book;
 import com.attendance.login.Library.Models.Delivery;
 import com.attendance.login.Library.Models.Hold;
@@ -12,12 +13,16 @@ import com.attendance.login.Library.Repository.BookRepo;
 import com.attendance.login.UserPackage.repository.DeliveryPerRepo;
 import com.attendance.login.UserPackage.repository.UserRegRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/delivery")
 public class DeliveryController {
     @Autowired
@@ -63,11 +68,18 @@ public class DeliveryController {
 //            return "Order Is On Hold";
 //        }
 
-    @PostMapping("accept-order")
-    public String acceptOrder(@RequestParam String response,String accessionno,String cardnumber) {
-        if (response.equals("accepted")) {
+    HoldIdgenerator holdIdgenerator;
+    @GetMapping("accept-order")
+    public String acceptOrder(@RequestParam String accessionno,String cardnumber,String barcode) {
+
+
+//        int l=15;
+
+
             UsersReg usersReg;
             usersReg = (UsersReg) userRegRepo.getByCardnumber(cardnumber);
+            Hold hold=new Hold();
+            hold=holdRepo.getByAccessionno(accessionno);
             Book book = (Book) bookRepo.getByAccessionno(accessionno);
             System.out.println("elements.........");
             System.out.println(usersReg);
@@ -75,10 +87,12 @@ public class DeliveryController {
             Delivery delivery = new Delivery();
             System.out.println("elements.........");
             delivery.setAccessionno(accessionno);
+        System.out.println("........executed...........");
             delivery.setCardnumber(cardnumber);
             delivery.setHousename(usersReg.getHousname());
             delivery.setPostoffice(usersReg.getPostoffice());
             delivery.setPincode(usersReg.getPincode());
+            delivery.setBarcode(barcode);
             delivery.setUserphone(usersReg.getPhone());
             delivery.setWardname(usersReg.getWardname());
             delivery.setWardnumber(usersReg.getWardnumber());
@@ -88,15 +102,14 @@ public class DeliveryController {
             delivery.setHoldstatus("F");
             delivery.setCheckinstatus("F");
             delivery.setDpinhand("T");
+            delivery.setHoldid(hold.holdid);
             delivery.setUserinhand("F");
+            delivery.setUsername(usersReg.getFirstname());
             delivery.setDistrict(usersReg.getDistrict());
-
+        System.out.println("completed");
             deliveryRepo.save(delivery);
+            holdRepo.deleteByAccessionno(accessionno);
             return "Waiting for Delivery Partner";
-        }
-        else {
-            return "Order Cancelled";
-        }
     }
 
     @PostMapping("delivery-confirm")
@@ -146,10 +159,49 @@ return "Delivery Boy Accepted the Request";
     }
 
 @PostMapping("add-delivery-boy")
-    public DeliveryPerson addDeliv(DeliveryPerson deliveryPerson)
+    public DeliveryPerson addDeliv(@RequestParam String phone, String name,String address)
 {
+//    String wrd=deliveryPerson.ward[0]="0";
+
+    DeliveryPerson deliveryPerson=new DeliveryPerson();
+    deliveryPerson.setAddress(address);
+    deliveryPerson.setName(name);
+    deliveryPerson.setPhone(phone);
+//    deliveryPerson.setWard(new String[]{wrd});
     return deliveryPerRepo.save(deliveryPerson);
 }
+
+@GetMapping("delete-book-requests")
+    public Void deleteBookReqs(@RequestParam String accessiono){
+       return holdRepo.deleteByAccessionno(accessiono);
+}
+
+@GetMapping("cancel-request")
+    public ResponseEntity<?>cancelreq(@RequestParam String holdid)
+{
+    holdRepo.deleteByHoldid(holdid);
+    return new ResponseEntity<>(HttpStatus.CONTINUE);
+
+}
+DeliveryPerson deliveryPerson;
+
+@GetMapping("get-delivery-persons")
+    public List<DeliveryPerson>listDp()
+{
+
+    return deliveryPerRepo.getPartners();
+}
+
+    @GetMapping("update-ward")
+    public List<DeliveryPerson>listDp(@RequestParam String[] ward,String phone)
+    {
+DeliveryPerson deliveryPerson1=new DeliveryPerson();
+deliveryPerson1=deliveryPerRepo.getByPhone(phone);
+        System.out.println(deliveryPerson1);
+deliveryPerson1.ward=ward;
+deliveryPerson1.setVerified("1");
+        return Collections.singletonList(deliveryPerRepo.save(deliveryPerson1));
+    }
 
 
     }

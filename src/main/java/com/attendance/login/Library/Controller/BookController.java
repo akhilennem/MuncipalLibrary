@@ -1,17 +1,25 @@
 package com.attendance.login.Library.Controller;
 
 import com.attendance.login.Library.Models.Book;
+import com.attendance.login.Library.Models.Delivery;
 import com.attendance.login.Library.Models.Hold;
 import com.attendance.login.Library.Repository.BookRepo;
+import com.attendance.login.Library.Repository.DeliveryRepo;
 import com.attendance.login.Library.Repository.HoldRepo;
 import com.attendance.login.UserPackage.models.UsersReg;
 import com.attendance.login.UserPackage.repository.UserRegRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
+import javax.swing.*;
+import java.util.List;
+import java.util.Random;
+
+@CrossOrigin
 @RestController
 @RequestMapping("api/book")
 public class BookController {
@@ -58,11 +66,39 @@ public class BookController {
         return (Iterable<Book>) bookRepo.getByAccessionno(accessionno);
     }
 
-//    @GetMapping("/get-trends")
-//    public Iterable<Book> getTrends() {
-//        return (Iterable<Book>) bookRepo.getAllByTrends();
-//    }
-//
+    @GetMapping("/trends")
+    public String getTrends(@RequestParam String accessionno) {
+        Book book;
+        book=bookRepo.getByAccessionno(accessionno);
+        book.trends="T";
+        bookRepo.save(book);
+return  "Saved";
+    }
+    @GetMapping("/delete-trends")
+    public String deleteTrends(@RequestParam String accessionno) {
+        Book book;
+        book=bookRepo.getByAccessionno(accessionno);
+        book.trends="F";
+        bookRepo.save(book);
+        return  "Saved";
+    }
+    @GetMapping("/new-release")
+    public String newrelease(@RequestParam String accessionno) {
+        Book book;
+        book=bookRepo.getByAccessionno(accessionno);
+        book.release="T";
+        bookRepo.save(book);
+        return  "Saved";
+    }
+    @GetMapping("/delete-release")
+    public String deleterelease(@RequestParam String accessionno) {
+        Book book;
+        book=bookRepo.getByAccessionno(accessionno);
+        book.release="F";
+        bookRepo.save(book);
+        return  "Saved";
+    }
+
 //    @GetMapping("/get-by-accessionno")
 //    public Iterable<Book> getReleasaes() {
 //        return (Iterable<Book>) bookRepo.findByReleases();
@@ -77,11 +113,36 @@ public class BookController {
 
     @PostMapping("/request-book")
     public String reqBook(String accessionno,String cardnumber) {
-        UsersReg usersReg;
+
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        String chars="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(15);
+        for (int i = 0; i < 15; i++)
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        System.out.println("random number is:: "+ sb);
+        String holdid= String.valueOf(sb);
+
+
+
+
+
+
+
+
+
+
+
+
+
+        UsersReg usersReg=new UsersReg();
         System.out.println("....executed0....");
         Book book = (Book) bookRepo.getByAccessionno(accessionno);
         System.out.println("....executed....1");
-        usersReg = (UsersReg) userRegRepo.getByCardnumber(cardnumber);
+        usersReg = userRegRepo.getByCardnumber(cardnumber);
         System.out.println("....executed....2");
         if (cardnumber.equals("0")) {
             return "you are not a verified member";
@@ -91,6 +152,7 @@ public class BookController {
             Hold hold1 = new Hold();
             hold1.setAccessionno(accessionno);
             hold1.setCardnumber(cardnumber);
+            hold1.setHoldid(holdid);
             hold1.setUsername(usersReg.getFirstname());
             hold1.setHousename(usersReg.getHousname());
             hold1.setPincode(usersReg.getPincode());
@@ -140,8 +202,8 @@ public class BookController {
 //        return null;
 //    }
 
-    @PostMapping("/search")
-    public List<Book> search(String keyword)
+    @GetMapping("/search")
+    public List<Book> search(@RequestParam String keyword)
     {
         if(keyword!=null)
         {
@@ -167,8 +229,8 @@ public class BookController {
         return (List<UsersReg>) userRegRepo.getByCardnumber(cardnumber);
     }
 
-    @PostMapping("accept-requests")
-    public String addUser(String cardnumber,String expirydate,String category,String phone)
+    @GetMapping("accept-requests")
+    public String addUser(@RequestParam String cardnumber,@RequestParam String expirydate,@RequestParam String category,String phone)
     {
         UsersReg usersReg;
 usersReg= (UsersReg) userRegRepo.getByPhone(phone);
@@ -179,11 +241,44 @@ userRegRepo.save(usersReg);
 return "Successfully Verified";
     }
 
-    @PostMapping("delete-requests")
-    public String deleteReqs(String phone)
+    @GetMapping("delete-requests")
+    public ResponseEntity<?> deleteReqs(@RequestParam String phone)
     {
+
         userRegRepo.deleteByPhone(phone);
-        return "deleted";
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    @PostMapping("get-users")
+    public List<UsersReg>usersRegs()
+    {
+
+       return userRegRepo.getUsers();
+    }
+
+    @GetMapping("get-trends")
+    public List<Book>getTrends()
+    {
+        String trends="T";
+       return bookRepo.getByTrends(trends);
+    }
+
+    @GetMapping("get-releases")
+    public List<Book>getDelete()
+    {
+        String release="T";
+        return bookRepo.getByRelease(release);
+    }
+    @GetMapping("requests")
+    public List<Hold>reqs()
+    {
+        return holdRepo.findAll();
+    }
+@Autowired
+    DeliveryRepo deliveryRepo;
+    @GetMapping("accepted-requests")
+    public List<Delivery>Delreqs()
+    {
+        return deliveryRepo.findAll();
+    }
 }
