@@ -1,6 +1,6 @@
 package com.attendance.login.Library.Delivery;
 
-import com.attendance.login.Library.HoldIdgenerator;
+
 import com.attendance.login.Library.Models.Book;
 import com.attendance.login.Library.Models.Delivery;
 import com.attendance.login.Library.Models.Hold;
@@ -68,7 +68,7 @@ public class DeliveryController {
 //            return "Order Is On Hold";
 //        }
 
-    HoldIdgenerator holdIdgenerator;
+
     @GetMapping("accept-order")
     public String acceptOrder(@RequestParam String accessionno,String cardnumber,String barcode) {
 
