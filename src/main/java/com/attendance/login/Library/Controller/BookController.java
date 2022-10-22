@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -281,4 +284,42 @@ return "Successfully Verified";
     {
         return deliveryRepo.findAll();
     }
+
+
+    @PostMapping("save-books")
+    public String savebook() {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/Details.csv"));
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(",");
+                Book book = new Book();
+                book.booktitle = data[0];
+                book.isbn = data[1];
+                book.language = data[2];
+                book.publicationplace = data[3];
+                book.publisher = data[4];
+                book.setPublicationdate(data[5]);
+                book.author = data[6];
+                book.editorortranslator = data[7];
+                book.volume = data[8];
+                book.price = data[9];
+                book.pages = data[10];
+                book.edition = data[11];
+                book.category = data[12];
+                book.classno = data[13];
+                book.accessionno = data[14];
+                book.callno = data[15];
+                book.subjectheading = data[16];
+                book.description = data[17];
+                bookRepo.save(book);
+            }
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+
+        }
+        return null;
+    }
+
 }
