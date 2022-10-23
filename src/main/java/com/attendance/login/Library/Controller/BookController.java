@@ -79,7 +79,7 @@ public class BookController {
     public String orderbook(@RequestParam String accessionno, String cardnumber, String housename,
                             String wardname, String wardnumber, String postoffice, String pincode, String phonenumber) {
         Book book = (Book) bookRepo.findByAccessionno(accessionno);
-        System.out.printf("........................... " + book.category + "\n");
+        System.out.printf(".........." + book.category + "\n");
         System.out.println(book.booktitle + "\n");
         System.out.println(book);
         Hold hold1 = new Hold();
